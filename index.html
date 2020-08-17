@@ -1,0 +1,135 @@
+<!-- Icons thanks go to http://glyphicons.com/ -->
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no">
+    <title>Restaurant Finder</title>
+
+    <!-- Use CDN for 3rd party libraries (better chance of files being already cached on user's browser). -->
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/css/toastr.min.css">
+    <link rel="stylesheet" href="css/offline-theme-default.css">
+    <link rel="stylesheet" href="css/offline-language-english.css">
+    <link rel="stylesheet" href="css/style.css">
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+    <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js"></script>
+    <script src="https://maps.googleapis.com/maps/api/js?v=3.exp&amp;libraries=places&amp;key=AIzaSyCSTBVg6tqkaa8ORfNlgI4OsnFhULM6EKc"></script>
+    <script src="http://oauth.googlecode.com/svn/code/javascript/oauth.js"></script>
+    <script src="http://oauth.googlecode.com/svn/code/javascript/sha1.js"></script>
+    <script src="js/Yelp.js"></script>
+    <script src="js/offline.min.js"></script>
+
+    <script>
+      var run = function(){
+        if (Offline.state === 'up')
+          Offline.check();
+      }
+      setInterval(run, 5000);
+    </script>
+  </head>
+  <body>
+    <!-- Search selectors -->
+    <div class="search-selectors">
+      <select class="form-control sort input-sm"
+              data-bind="options: sorts, optionsText: 'desc', optionsValue: 'sort', value: sort">
+      </select>
+
+      <select class="form-control category input-sm"
+              data-bind="options: categories, optionsText: 'desc', optionsValue: 'id', value: category">
+      </select>
+
+      <select class="form-control radius input-sm"
+              data-bind="options: radiuses, optionsText: 'desc', optionsValue: 'distance', value: radius">
+      </select>
+
+      <button type="button" class="btn btn-default btn-sm glyphicon glyphicon-list modal-button" title="List view" id="btnModal"
+              data-toggle="modal" data-target="#listView">
+      </button>
+
+      <button type="button" class="btn btn-default btn-sm glyphicon glyphicon-refresh" title="Refresh" id="btnRefresh">
+      </button>
+    </div>
+
+    <!-- Map area -->
+    <input id="pac-input" class="controls" type="text" placeholder="Search Box">
+    <div id="map-canvas"></div>
+
+    <!-- Modal pop-up for restaurants in list view mode -->
+    <div class="modal fade" id="listView" tabindex="-1" role="dialog" aria-labelledby="criteriaTitle">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title" id="criteriaTitle">
+              <span class="glyphicon glyphicon-cutlery"></span>&nbsp;
+              <span class="modal-sort-color" data-bind="text: sortDescription()"></span>&nbsp;<span>restaurants</span>
+            </h4>
+          </div>
+          <div class="modal-body">
+            ...
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      var restaurantSelected = false;
+      google.maps.event.addDomListener(window, 'load', YelpEngine.initialize());
+
+      /***************
+      List View Events
+      ***************/
+      /* Mimic hover functionality that Map interface enables as user now hovers over items in list view mode */
+      $(".modal-body").on("mouseenter", "a.list-group-item", function(event) {
+        YelpEngine.setActiveMarker($(this).index());
+      });
+
+      /* This event gets fired unintentionally when selecting a restaurant from the list (handled by next event below).
+      The "if" statement is necessary to prevent the selected restaurant's marker to be closed and lose its "active" status.
+      (jQuery's "stopPropagation() could not stop the click from bubbling up to here) */
+      $(".modal-body").on("mouseleave", "a.list-group-item", function(event) {
+        if (!restaurantSelected)
+          YelpEngine.closeActiveMarker($(this).index());
+      });
+
+      /* User picked a restaurant. Marker should already be active on the map. */
+      $(".modal-body").on("click", "a.list-group-item", function(event) {
+        restaurantSelected = true;    // See "mouseleave" event as to why this is necessary...
+        $('#listView').modal('hide'); // Close the modal pop-up as we select a restaurant.
+      });
+
+      /* As modal is closed, determine if the user had clicked a restaurant or
+        if he/she simply cancelled the operation. */
+      $('#listView').on('hidden.bs.modal', function (e) {
+        if (!restaurantSelected)
+          YelpEngine.cancelListViewMode();
+      });
+
+      /**************
+      Map View events
+      **************/
+      /* User requests to see the restaurants in list view. */
+      $("#btnModal").on("click", function() {
+        YelpEngine.initializeListViewMode();
+        restaurantSelected = false;
+      });
+
+      /* Refresh the search with current values (useful when dragging
+        the map to a different location that the default one) */
+      $("#btnRefresh").on("click", function() {
+        var category = $(".form-control.category").val();
+        var radius = $(".form-control.radius").val();
+        var sort = $(".form-control.sort").val();
+
+        YelpEngine.searchNearbyRestaurants(category, radius, sort);
+      });
+    </script>
+
+    <!-- Knockout related scripts -->
+    <script src="js/knockout-3.3.0.js"></script>
+    <script src="js/SearchCriteriaViewModel.js" defer></script>
+  </body>
+</html>

@@ -1,0 +1,139 @@
+/* First few styles pulled from Google Maps Places Searchbox sample */
+html,
+body {
+  height: 100%;
+  margin: 0;
+  padding: 0
+}
+
+.controls {
+  margin-top: 6px;
+  border: 1px solid transparent;
+  border-radius: 2px 0 0 2px;
+  box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  height: 32px;
+  outline: none;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+}
+
+#pac-input {
+  background-color: #fff;
+  font-family: Roboto;
+  font-size: 15px;
+  font-weight: 300;
+  margin-left: 12px;
+  padding: 0 11px 0 13px;
+  text-overflow: ellipsis;
+  max-width: 400px;
+  width: 95%;
+}
+
+#pac-input:focus {
+  border-color: #4d90fe;
+}
+
+.pac-container {
+  font-family: Roboto;
+}
+
+#type-selector {
+  color: #fff;
+  background-color: #4d90fe;
+  padding: 5px 11px 0 11px;
+}
+
+#type-selector label {
+  font: 300 13px Roboto;
+}
+
+#target {
+  width: 345px;
+}
+
+
+/* Custom stylings */
+body {
+  min-width: 320px; /* I don't know of any smartphone narrower than the iPhone 4's width. */
+}
+
+/* Keep canvas' height just tall enough to avoid any kind of scrolling. */
+#map-canvas {
+  height: 93%;
+  margin: 0;
+  padding: 0
+}
+
+/* Style the dropdowns */
+.form-control {
+  display: inline;
+  background-color: lightyellow;
+}
+
+/* Override Bootstrap's form-control width to save space */
+.form-control.sort, .form-control.category, .form-control.radius {
+  width: auto;
+}
+
+/* Align the buttons so they're in line with the dropdowns... */
+.search-selectors button {
+  margin-top: -3px;
+}
+
+/* Give a bit of space to the search dropdowns. */
+.search-selectors {
+  margin: 5px 0 5px 2px;
+}
+
+.modal-sort-color {
+  color: red;
+}
+
+/* START Override Bootstrap's modal pop-up settings for this site's use. */
+div.modal-dialog {
+  width: 300px;
+  float: left;
+  margin-left: 10px;
+}
+
+div.modal-header {
+  padding: 10px;
+}
+
+div.modal-body {
+  padding: 0;
+}
+
+div.modal-backdrop.fade.in {
+  opacity: 0;
+}
+
+a.list-group-item {
+  line-height: 15px;
+}
+/* END Override Bootstrap's modal pop-up settings for this site's use. */
+
+/* Responsive styling to keep map's "Map" and "Satellite" buttons visible at all times. */
+@media screen and (max-width: 515px) {
+  .controls {
+    margin-top: 28px;
+  }
+}
+
+/* Make buttons smaller on smartphones */
+@media screen and (max-width: 380px) {
+  #btnModal, #btnRefresh {
+    position: absolute;
+    top: 45px;
+    padding: 2px 6px 2px 6px;
+    z-index: 1;
+  }
+
+  #btnModal {
+    left: 11px;
+  }
+
+  #btnRefresh {
+    left: 40px;
+  }
+}
